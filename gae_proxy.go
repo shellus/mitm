@@ -9,19 +9,36 @@ import (
 	"strings"
 	"encoding/hex"
 	"net/http"
-	"io"
 )
 
 func main() {
-	testRoundTrip()
+	//fmt.Println(testuncompressRequest(""))
+	//testRoundTrip()
+	testServer()
+}
+func testServer(){
+	req,err := http.NewRequest("POST", "http://wanwang.endaosi.cn/gae_proxy.php", nil)
+	if err != nil {
+		panic(err)
+	}
+	req.Header.Add("Cookie", "eJwUxjEOQiEMBuDbMPe1pb8MPQwJbRg0GNB4ffO277ufbg8oFASRzslpF8gahzUQB8SY83aZ0Ufs4+Xdz/mtPRxkFwQCWILLKz5zDVdorfoPAAD//3FVGTY=")
+	resp,err := http.DefaultClient.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	buff,err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(string(buff))
 }
 func testuncompressRequest(str string)map[string]string{
-	//str := "eNpljkEOwzAIBH+TMwHDJgc/xqqxcmiVym7V7xdXuVUrIbQMC+9+z7YhhQgihRs3W0G2s9sOYocYhxf9cnip3kdOmzUIUuD0D1OlklaTkEboj+IZXOZEFdNnrsHA1PzKEYRrN24CdlFZo9LcWJ5ljM/Za8a8JiHEfV4e/jrOmuN31fQFA80zYA=="
+	str = "eJwUxjEOQiEMBuDbMPe1pb8MPQwJbRg0GNB4ffO277ufbg8oFASRzslpF8gahzUQB8SY83aZ0Ufs4+Xdz/mtPRxkFwQCWILLKz5zDVdorfoPAAD//3FVGTY="
 	requestInfo := decode(uncompressRequest(str))
 	return requestInfo
 }
 func testcompressRequest()string{
-	req, err := http.NewRequest("GET", "https://api.ip.sb/ip", nil)
+	req, err := http.NewRequest("GET", "http://ip.sb", nil)
 	if err != nil {
 		panic(err)
 	}
@@ -36,7 +53,6 @@ func testRoundTrip(){
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(resp.StatusCode)
 	buff, err := ioutil.ReadAll(resp.Body) // todo panic: unexpected EOF
 	if err != nil {
 		panic(err)
@@ -46,8 +62,7 @@ func testRoundTrip(){
 }
 
 func RoundTrip(req *http.Request) (*http.Response, error) {
-
-	gaeRequest, err := http.NewRequest("POST", "http://wanwang.endaosi.cn/gae_proxy.php", io.Reader(req.Body))
+	gaeRequest, err := http.NewRequest("POST", "http://wanwang.endaosi.cn/gae_proxy.php", req.Body)
 	if err != nil {
 		return nil,err
 	}
