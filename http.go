@@ -15,7 +15,7 @@ func (proxy *MiTMProxy) transportHTTPRequest(w http.ResponseWriter, r *http.Requ
 	removeProxyHeaders(r)
 
 	// transport request to target host
-	resp, err := proxy.transport.RoundTrip(r)
+	resp, err := proxy.transport.RoundTrip(r) // todo 实现拦截器
 	if err != nil {
 		//proxy.error("error read response %v %v", r.URL.Host, err.Error())
 		//http.Error(w, "", 400)
